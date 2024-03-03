@@ -174,7 +174,8 @@ vim.keymap.set('n', '<leader>n', '<Cmd>Neotree toggle<CR>')
 
 -- Open Mason on command
 vim.keymap.set('n', '<leader>m', '<Cmd>Mason<CR>')
-
+vim.keymap.set('n', 'z', 'b')
+vim.keymap.set('n', 'r', 'w')
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -240,7 +241,7 @@ require('lazy').setup {
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   'windwp/nvim-autopairs',
   'tpope/vim-fugitive',
-
+  'mipmip/vim-scimark',
   'sindrets/winshift.nvim',
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -848,7 +849,11 @@ require('lazy').setup {
 
       null_ls.setup {
         sources = {
-          null_ls.builtins.diagnostics.ruff,
+          null_ls.builtins.diagnostics.pylint.with {
+            diagnostics_postprocess = function(diagnostic)
+              diagnostic.code = diagnostic.message_id
+            end,
+          },
           null_ls.builtins.formatting.black,
         },
       }
