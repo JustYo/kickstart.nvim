@@ -155,10 +155,10 @@ vim.opt.scrolloff = 10
 vim.opt.hlsearch = true
 
 -- Set hjkl keymap
-vim.keymap.set('n', 'j', 'h')
-vim.keymap.set('n', 'k', 'j')
-vim.keymap.set('n', 'l', 'k')
-vim.keymap.set('n', 'm', 'l')
+vim.keymap.set({ 'n', 'v' }, 'j', 'h')
+vim.keymap.set({ 'n', 'v' }, 'k', 'j')
+vim.keymap.set({ 'n', 'v' }, 'l', 'k')
+vim.keymap.set({ 'n', 'v' }, 'm', 'l')
 
 vim.keymap.set('i', 'jj', '<Esc>')
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -174,6 +174,14 @@ vim.keymap.set('n', '<leader>n', '<Cmd>Neotree toggle<CR>')
 
 -- Open Mason on command
 vim.keymap.set('n', '<leader>m', '<Cmd>Mason<CR>')
+
+-- keymap to go to config file
+vim.keymap.set('n', '<leader>u', '<Cmd>e ~/.config/nvim<CR>')
+
+-- keymap to go to git folder
+vim.keymap.set('n', '<leader>p', '<Cmd>e ~/Dev/git_projects/<CR>')
+
+-- Move around words learnt with vimadventure
 vim.keymap.set('n', 'z', 'b')
 vim.keymap.set('n', 'r', 'w')
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -243,6 +251,7 @@ require('lazy').setup {
   'tpope/vim-fugitive',
   'mipmip/vim-scimark',
   'sindrets/winshift.nvim',
+  'ixru/nvim-markdown',
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -703,7 +712,38 @@ require('lazy').setup {
       }
     end,
   },
+  {
+    'toppair/peek.nvim',
+    event = { 'VeryLazy' },
+    build = 'deno task --quiet build:fast',
+    config = function()
+      require('peek').setup {
+        auto_load = true, -- whether to automatically load preview when
+        -- entering another markdown buffer
+        close_on_bdelete = true, -- close preview window on buffer delete
 
+        syntax = true, -- enable syntax highlighting, affects performance
+
+        theme = 'dark', -- 'dark' or 'light'
+
+        update_on_change = true,
+
+        app = 'webview', -- 'webview', 'browser', string or a table of strings
+        -- explained below
+
+        filetype = { 'markdown' }, -- list of filetypes to recognize as markdown
+
+        -- relevant if update_on_change is true
+        throttle_at = 200000, -- start throttling when file exceeds this
+        -- amount of bytes in size
+        throttle_time = 'auto', -- minimum amount of time in milliseconds
+        -- that has to pass before starting new render
+      }
+      -- refer to `configuration to change defaults`
+      vim.api.nvim_create_user_command('PeekOpen', require('peek').open, {})
+      vim.api.nvim_create_user_command('PeekClose', require('peek').close, {})
+    end,
+  },
   { -- Autoformat
     'stevearc/conform.nvim',
     opts = {
